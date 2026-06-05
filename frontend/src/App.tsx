@@ -6,11 +6,6 @@ function App() {
   const [jobText, setJobText] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files && e.target.files[0];
-    if (f) setFileName(f.name);
-  }
-
   function onDrop(e: DragEvent) {
     e.preventDefault();
     const f = e.dataTransfer.files && e.dataTransfer.files[0];
@@ -24,6 +19,39 @@ function App() {
   function clearFile() {
     setFileName(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function uploadResume(file: File) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("http://127.0.0.1:8000/resume/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+
+      console.log("Parsed Resume:", data);
+
+      // Store parsed data if required
+      // setParsedResume(data);
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+    }
+  }
+
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files && e.target.files[0];
+    if (f) {
+      setFileName(f.name);
+      uploadResume(f);
+    }
   }
 
   return (
