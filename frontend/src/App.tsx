@@ -1,122 +1,113 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useRef, DragEvent } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [jobText, setJobText] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files && e.target.files[0];
+    if (f) setFileName(f.name);
+  }
+
+  function onDrop(e: DragEvent) {
+    e.preventDefault();
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) setFileName(f.name);
+  }
+
+  function onDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  function clearFile() {
+    setFileName(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+    <div className="page-root">
+      <div className="container">
+        <div className="panel left-panel">
+          <div className="step">STEP. 01</div>
+          <h2 className="panel-title">Resume Source</h2>
+          <p className="panel-sub">
+            Upload your current resume in PDF or DOCX format for AI structural
+            analysis.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <div
+            className="upload-area"
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {!fileName ? (
+              <>
+                <div className="upload-icon" />
+                <div className="upload-text">Upload your Resume</div>
+                <div className="upload-hint">
+                  Drag and drop your document here or click to browse files from
+                  your computer.
+                </div>
+                <div className="upload-buttons">
+                  <button className="btn btn-outline">PDF</button>
+                  <button className="btn btn-outline">DOCX</button>
+                </div>
+              </>
+            ) : (
+              <div className="file-info">
+                <div className="file-name">{fileName}</div>
+                <button
+                  className="btn btn-clear"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearFile();
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"
+              onChange={onFileChange}
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <div className="panel right-panel">
+          <div className="step">STEP. 02</div>
+          <h2 className="panel-title">Target Job Information</h2>
+          <p className="panel-sub">
+            Paste the job requirements to evaluate your alignment score and
+            missing skills.
+          </p>
+
+          <div className="job-card">
+            <div className="job-card-header">
+              JOB DESCRIPTION <button className="paste-btn">Paste Text</button>
+            </div>
+            <textarea
+              className="job-textarea"
+              placeholder="Enter the job description to compare against your resume..."
+              value={jobText}
+              onChange={(e) => setJobText(e.target.value)}
+            />
+
+            <div className="analyze-row">
+              <div className="ready">READY FOR ANALYSIS</div>
+              <button className="btn btn-primary">Analyze Match ⚡</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
