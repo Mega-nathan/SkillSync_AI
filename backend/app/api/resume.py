@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from parsers.text_cleaner import clean_text
-from parsers.docx_parser import extract_text_from_docx
-from parsers.pdf_parser import extract_text_from_pdf
+from ..parsers.text_cleaner import clean_text
+from ..parsers.docx_parser import extract_text_from_docx
+from ..parsers.pdf_parser import extract_text_from_pdf
 
 router = APIRouter(prefix="/resume", tags=["resume"])
 
